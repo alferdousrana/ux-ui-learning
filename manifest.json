@@ -1,0 +1,26 @@
+{
+  "name": "UX-UI — Learn UX. Master UI. Think Like a Designer.",
+  "short_name": "UX-UI",
+  "description": "Offline UX/UI learning platform in Bangla and English.",
+  "id": "./",
+  "start_url": "./#/",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#F3F5F4",
+  "theme_color": "#0E6B5C",
+  "lang": "bn",
+  "categories": ["education", "productivity", "design"],
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ],
+  "shortcuts": [
+    { "name": "Today's plan", "url": "./#/", "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "UX Laws", "url": "./#/laws" },
+    { "name": "Practice quiz", "url": "./#/practice/quiz?n=10" }
+  ]
+}

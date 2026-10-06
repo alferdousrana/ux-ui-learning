@@ -1,0 +1,97 @@
+/* ==========================================================================
+   Color themes. Every color in the app comes from these tokens.
+   Palette: cool mist paper, Jamdani green ink, marigold for progress.
+   ========================================================================== */
+:root,
+html[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F3F5F4;
+  --surface: #FFFFFF;
+  --surface-2: #ECF1EF;
+  --surface-3: #E1E8E5;
+  --ink: #16201C;
+  --ink-2: #3F4D47;
+  --muted: #5F6D67;
+  --line: #D6DFDB;
+  --line-strong: #B9C6C0;
+
+  --primary: #0E6B5C;
+  --primary-hover: #0A5649;
+  --primary-ink: #FFFFFF;
+  --primary-soft: #DCEEE9;
+
+  --accent: #A86F00;          /* text-safe marigold */
+  --accent-fill: #E8A317;     /* decorative marigold */
+  --accent-soft: #FBF0D4;
+
+  --good: #1C7340;
+  --good-soft: #E2F2E7;
+  --bad: #B42843;
+  --bad-soft: #FBE5EA;
+  --warn: #8A5A00;
+  --warn-soft: #FFF3D6;
+  --info: #2556A8;
+  --info-soft: #E4ECFA;
+
+  --focus: #2556A8;
+  --grid-line: rgba(14, 107, 92, .075);
+  --overlay: rgba(10, 18, 15, .45);
+  --shadow-1: 0 1px 2px rgba(22, 32, 28, .06);
+  --shadow-2: 0 10px 30px -14px rgba(22, 32, 28, .28);
+  --shadow-3: 0 24px 60px -20px rgba(22, 32, 28, .35);
+
+  /* Mock UI palette (used in good/bad visual lab) */
+  --mk-bg: #FFFFFF;
+  --mk-ink: #1D2421;
+  --mk-muted: #6A7570;
+  --mk-line: #D9DFDC;
+  --mk-field: #F6F8F7;
+  --mk-primary: #0E6B5C;
+  --mk-lowc: #C9CFCC;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0D1311;
+  --surface: #141C19;
+  --surface-2: #1A2420;
+  --surface-3: #22302A;
+  --ink: #E6EEEA;
+  --ink-2: #B9C7C0;
+  --muted: #8E9D96;
+  --line: #27342F;
+  --line-strong: #3A4A43;
+
+  --primary: #4CC2A6;
+  --primary-hover: #6AD3BA;
+  --primary-ink: #06120F;
+  --primary-soft: #15342C;
+
+  --accent: #F0B43C;
+  --accent-fill: #F0B43C;
+  --accent-soft: #382B10;
+
+  --good: #62CF8A;
+  --good-soft: #13301F;
+  --bad: #F27D93;
+  --bad-soft: #3A1720;
+  --warn: #F2C35E;
+  --warn-soft: #3A2C0F;
+  --info: #86ACF5;
+  --info-soft: #172640;
+
+  --focus: #86ACF5;
+  --grid-line: rgba(76, 194, 166, .07);
+  --overlay: rgba(0, 0, 0, .6);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow-2: 0 10px 30px -14px rgba(0, 0, 0, .7);
+  --shadow-3: 0 24px 60px -20px rgba(0, 0, 0, .8);
+
+  --mk-bg: #1B2420;
+  --mk-ink: #E4ECE8;
+  --mk-muted: #95A39C;
+  --mk-line: #34433C;
+  --mk-field: #222D29;
+  --mk-primary: #4CC2A6;
+  --mk-lowc: #3E4C46;
+}

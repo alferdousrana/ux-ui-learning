@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="bn" data-theme="light" data-fs="md">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>UX-UI · Learn UX. Master UI. Think Like a Designer.</title>
+  <meta name="description" content="A complete offline UX/UI learning platform in Bangla and English: UX laws, research, UI design, Figma, case studies, practice and exams.">
+  <meta name="theme-color" content="#F3F5F4">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="UX-UI">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <!-- Fonts are optional: system fallbacks are defined, and the service worker caches them after first load. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/themes.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script>
+    // Apply saved theme before paint to avoid a flash.
+    try { const s = JSON.parse(localStorage.getItem('uxui.settings') || '{}'); if (s.theme) document.documentElement.dataset.theme = s.theme; if (s.fontSize) document.documentElement.dataset.fs = s.fontSize; } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="offline-banner" role="status"></div>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#/"><span class="brand-mark" aria-hidden="true">UX</span><span><span class="brand-name">UX-UI</span><br><span class="brand-tag">Learn UX. Master UI. Think Like a Designer.</span></span></a>
+      <nav class="nav" id="nav"></nav>
+      <div class="sidebar-foot"><span class="status-dot" id="net-dot" aria-hidden="true"></span><span id="net-label">Online</span></div>
+    </aside>
+    <div class="main-col">
+      <header class="header">
+        <button class="icon-btn menu-btn" data-action="menu" aria-label="Open navigation" aria-controls="sidebar"></button>
+        <a class="header-brand" href="#/"><span class="brand-mark" aria-hidden="true">UX</span>UX-UI</a>
+        <div class="header-search search-box" role="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"/></svg>
+          <label class="sr-only" for="hsearch">Search</label>
+          <input id="hsearch" class="input" type="search" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="search-pop" aria-autocomplete="list">
+          <kbd aria-hidden="true">Ctrl K</kbd>
+          <div class="search-pop" id="search-pop" role="listbox" aria-label="Search results" hidden></div>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn show-mobile" data-action="mobile-search" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM21 21l-4.3-4.3"/></svg></button>
+          <a class="pill-stat" id="hdr-streak" href="#/progress" title="Streak"></a>
+          <a class="pill-stat" id="hdr-xp" href="#/profile"></a>
+          <button class="icon-btn hide-mobile" id="lang-btn" data-action="ui-lang" aria-label="Switch interface language" style="font-weight:700;font-size:13px">EN</button>
+          <button class="icon-btn" id="theme-btn" data-action="theme"></button>
+        </div>
+      </header>
+      <main class="main" id="main" tabindex="-1">
+        <div class="view" aria-busy="true"><div class="skel" style="height:220px;border-radius:20px"></div><p id="boot-msg" class="small muted mt-4">Starting UX-UI…</p></div>
+      </main>
+    </div>
+  </div>
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Primary"></nav>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <noscript><p style="padding:24px">UX-UI needs JavaScript enabled.</p></noscript>
+  <script>document.querySelector('.menu-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';</script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

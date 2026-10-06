@@ -1,0 +1,77 @@
+/* ==========================================================================
+   Breakpoints: large desktop ≥1440, desktop ≥1200, laptop 1025–1199,
+   tablet 721–1024, mobile ≤720. Mobile is redesigned, not shrunk.
+   ========================================================================== */
+@media (min-width: 1440px) {
+  :root { --content-max: 1240px; }
+  .main { padding-left: var(--sp-10); padding-right: var(--sp-10); }
+}
+
+@media (max-width: 1199px) {
+  .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split { grid-template-columns: 1fr; }
+  .hero-plan { grid-template-columns: 1fr; gap: var(--sp-6); }
+}
+
+/* Tablet: sidebar becomes an off-canvas drawer */
+@media (max-width: 1024px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; width: min(var(--sidebar-w), 86vw); height: 100%;
+    transform: translateX(-102%); transition: transform var(--dur-slow) var(--ease);
+    z-index: var(--z-drawer); box-shadow: var(--shadow-3);
+  }
+  body.drawer-open .sidebar { transform: none; }
+  .header .menu-btn { display: inline-grid; }
+  .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .compare-explain { grid-template-columns: 1fr; }
+}
+
+/* Mobile: app-like layout with bottom navigation */
+@media (max-width: 720px) {
+  :root { --header-h: 56px; }
+  h1 { font-size: var(--fs-2xl); }
+  .hero-plan h1 { font-size: var(--fs-3xl); }
+  .header { padding: 0 var(--sp-3); gap: var(--sp-2); }
+  .header-brand { display: flex; align-items: center; gap: var(--sp-2); font-family: var(--font-display); font-weight: 800; text-decoration: none; color: var(--ink); }
+  .header-brand .brand-mark { width: 30px; height: 30px; font-size: 12px; border-radius: 8px; }
+  .header .menu-btn { display: none; }
+  .header-search { display: none; }
+  .header-search.mobile-open { display: block; position: absolute; left: var(--sp-2); right: var(--sp-2); top: 8px; max-width: none; }
+  .hide-mobile { display: none !important; }
+  .show-mobile { display: inline-grid !important; }
+  .main { padding: var(--sp-5) var(--sp-4) calc(var(--bottomnav-h) + var(--sp-8) + env(safe-area-inset-bottom, 0px)); }
+  .bottom-nav { display: grid; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .grid-auto { grid-template-columns: 1fr; }
+  .grid-stats { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .hero-plan { padding: var(--sp-5); border-radius: var(--r-md); }
+  .card { padding: var(--sp-4); }
+  .compare { grid-template-columns: 1fr; }
+  .compare-side.bad { border-left: 0; border-top: 2px dashed var(--line-strong); }
+  .qa-grid { grid-template-columns: 1fr; }
+  .lesson-nav a { max-width: 100%; }
+  .persona-card { grid-template-columns: 1fr; }
+  .result-hero { grid-template-columns: 1fr; justify-items: start; }
+  .toasts { left: var(--sp-3); right: var(--sp-3); bottom: calc(var(--bottomnav-h) + var(--sp-3) + env(safe-area-inset-bottom, 0px)); }
+  .toast { max-width: none; }
+  .modal { border-radius: var(--r-lg) var(--r-lg) 0 0; max-height: 92vh; align-self: end; }
+  .overlay { padding: 0; place-items: end stretch; }
+  .flow-canvas { height: 440px; }
+  .progress-row { grid-template-columns: 110px 1fr 40px; }
+  .exam-bar { top: var(--header-h); }
+  .tab { padding: 0 var(--sp-3); }
+  .toolbar .select { flex: 1 1 140px; }
+  .card-link:hover { box-shadow: none; }
+  /* Horizontal swipe rails on mobile */
+  .rail-mobile { display: grid; grid-auto-flow: column; grid-auto-columns: 82%; grid-template-columns: none !important; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--sp-2); scrollbar-width: none; }
+  .rail-mobile::-webkit-scrollbar { display: none; }
+  .rail-mobile > * { scroll-snap-align: start; }
+}
+.show-mobile { display: none !important; }
+@media (max-width: 720px) { .show-mobile { display: inline-grid !important; } }
+
+@media print {
+  .sidebar, .header, .bottom-nav, .toasts { display: none !important; }
+  .app { display: block; }
+}
