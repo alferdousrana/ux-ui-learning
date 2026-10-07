@@ -6,7 +6,7 @@ import { C } from '../../data/content.js';
 import { isDone, visit } from '../core/progress.js';
 import { replaceQuery } from '../core/router.js';
 import { tokenize } from '../core/search.js';
-import { pageHead, langSwitch, bookmarkBtn, completeBtn, notesPanel, bindNotes, compareView, miniQuiz, bindMiniQuiz, diffBadge, emptyState } from '../ui/components.js';
+import { thumb, pageHead, langSwitch, bookmarkBtn, completeBtn, notesPanel, bindNotes, compareView, miniQuiz, bindMiniQuiz, diffBadge, emptyState } from '../ui/components.js';
 import { diagram, hasDiagram } from '../ui/visuals.js';
 import { notFound } from './learn.js';
 
@@ -20,7 +20,7 @@ export function renderLaws(root, { query }) {
     const toks = tokenize(q);
     const list = C.laws.filter((l) => (cat === 'all' || l.category === cat) && (!toks.length || toks.every((tk) => `${l.name} ${l.short} ${l.tags.join(' ')} ${l.category} ${l.web} ${l.mobile}`.toLowerCase().includes(tk))));
     $('#law-count', root).textContent = `${list.length} of ${C.laws.length} laws`;
-    $('#law-grid', root).innerHTML = list.length ? list.map((l) => `<a class="card card-link" href="#/law/${l.id}"><div class="card-top"><span class="badge badge-primary">${esc(l.category)}</span>${isDone('law:' + l.id) ? `<span class="done-mark is-done" aria-label="Completed">${icon('check')}</span>` : ''}</div><h3>${esc(l.name)}</h3><p>${esc(l.short)}</p><div class="card-meta">${diffBadge(l.difficulty)}</div></a>`).join('')
+    $('#law-grid', root).innerHTML = list.length ? list.map((l) => `<a class="card card-link" href="#/law/${l.id}">${thumb(l.visual)}<div class="card-top"><span class="badge badge-primary">${esc(l.category)}</span>${isDone('law:' + l.id) ? `<span class="done-mark is-done" aria-label="Completed">${icon('check')}</span>` : ''}</div><h3>${esc(l.name)}</h3><p>${esc(l.short)}</p><div class="card-meta">${diffBadge(l.difficulty)}</div></a>`).join('')
       : `<div style="grid-column:1/-1">${emptyState({ ico: '🔎', title: `No laws match “${q}”`, text: 'Try a broader word such as "memory", "choice" or "touch", or clear the category filter.', action: '<button class="btn btn-secondary" data-clear>Clear filters</button>' })}</div>`;
     replaceQuery('#/laws' + buildQuery({ q, cat }));
   };

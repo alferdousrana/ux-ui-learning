@@ -1,0 +1,9 @@
+# Netlify / Cloudflare Pages: never cache the files that announce updates.
+/service-worker.js
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/
+  Cache-Control: no-cache
+/js/version.js
+  Cache-Control: no-cache

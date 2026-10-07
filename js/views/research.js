@@ -4,7 +4,7 @@ import { esc, $, $$, uid, copyText, downloadFile } from '../core/utils.js';
 import { icon } from '../core/icons.js';
 import { C } from '../../data/content.js';
 import { isDone, visit, complete, XP_RULES } from '../core/progress.js';
-import { pageHead, langSwitch, bookmarkBtn, completeBtn, notesPanel, bindNotes, miniQuiz, bindMiniQuiz, itemCard, diffBadge, toast, emptyState, confirmDialog, progressBar } from '../ui/components.js';
+import { thumb, visualBlock, pageHead, langSwitch, bookmarkBtn, completeBtn, notesPanel, bindNotes, miniQuiz, bindMiniQuiz, itemCard, diffBadge, toast, emptyState, confirmDialog, progressBar } from '../ui/components.js';
 import { diagram } from '../ui/visuals.js';
 import { notFound } from './learn.js';
 import { navigate } from '../core/router.js';
@@ -15,7 +15,7 @@ export function renderResearch(root) {
   root.innerHTML = `${pageHead({ title: 'UX Research Master Course', lead: 'Learn to replace assumptions with evidence: fundamentals, 14 methods with step-by-step guides, a toolkit of templates, and a persona builder.', actions: `<a class="btn btn-secondary" href="#/toolkit">${icon('wrench')} ${t('toolkit')}</a><a class="btn btn-secondary" href="#/persona">${icon('user')} ${t('persona')}</a>` })}
     <figure class="figure">${diagram('researchQuadrant')}<figcaption>Where common research methods sit: what people do vs say, qualitative vs quantitative.</figcaption></figure>
     <section class="section"><div class="section-head"><h2>Research fundamentals</h2><span class="small muted">${moduleStats(f).done}/${moduleStats(f).total}</span></div><div class="grid grid-3">${f.items.map((k) => itemCard(k)).join('')}</div></section>
-    <section class="section"><div class="section-head"><h2>Research methods</h2></div><div class="grid grid-3">${C.methods.map((m) => `<a class="card card-link" href="#/method/${m.id}"><div class="card-top"><span class="badge badge-primary">${esc(m.kind.join(' · '))}</span>${isDone('method:' + m.id) ? `<span class="done-mark is-done">${icon('check')}</span>` : ''}</div><h3>${esc(m.name)}</h3><p>${esc(m.en)}</p><div class="card-meta">${diffBadge(m.difficulty)}</div></a>`).join('')}</div></section>
+    <section class="section"><div class="section-head"><h2>Research methods</h2></div><div class="grid grid-3">${C.methods.map((m) => `<a class="card card-link" href="#/method/${m.id}">${thumb(m.visual.svg)}<div class="card-top"><span class="badge badge-primary">${esc(m.kind.join(' · '))}</span>${isDone('method:' + m.id) ? `<span class="done-mark is-done">${icon('check')}</span>` : ''}</div><h3>${esc(m.name)}</h3><p>${esc(m.en)}</p><div class="card-meta">${diffBadge(m.difficulty)}</div></a>`).join('')}</div></section>
     <section class="section"><div class="section-head"><h2>Personas</h2></div><div class="grid grid-3">${p.items.map((k) => itemCard(k)).join('')}</div></section>`;
 }
 
@@ -30,6 +30,7 @@ export function renderMethod(root, { params }) {
     <div class="row-between">${langSwitch()}<div class="lesson-actions">${bookmarkBtn(key, m.name, route)}${completeBtn(key, m.name, route, m.minutes)}</div></div>
     <article class="lesson-body mt-6">
       <section><h2>What it is</h2><p class="explain mt-2" lang="${lang}">${esc(lang === 'bn' ? m.bn : m.en)}</p><details class="acc mt-4"><summary>${lang === 'bn' ? 'English' : 'বাংলা'}</summary><div class="acc-body"><p>${esc(lang === 'bn' ? m.en : m.bn)}</p></div></details></section>
+      ${visualBlock(m.visual, m.name)}
       <div class="qa-grid">${box('Why use it', `<p>${esc(m.why)}</p>`, 'info')}${box('When to use it', `<p>${esc(m.when)}</p>`, 'info')}</div>
       <section><h2>How to conduct it — step by step</h2><ol class="steps-list mt-4">${m.how.map((s) => `<li>${esc(s)}</li>`).join('')}</ol></section>
       ${box('Example', `<p>${esc(m.example)}</p>`)}

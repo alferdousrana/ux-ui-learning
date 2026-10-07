@@ -4,7 +4,7 @@ import { esc } from '../core/utils.js';
 import { icon } from '../core/icons.js';
 import { C, byKey } from '../../data/content.js';
 import { isDone, visit } from '../core/progress.js';
-import { pageHead, progressBar, itemCard, langSwitch, bookmarkBtn, completeBtn, notesPanel, bindNotes, visualBlock, miniQuiz, bindMiniQuiz, relatedList, diffBadge, emptyState } from '../ui/components.js';
+import { pageHead, progressBar, itemCard, langSwitch, bookmarkBtn, completeBtn, notesPanel, bindNotes, visualBlock, figmaSteps, miniQuiz, bindMiniQuiz, relatedList, diffBadge, emptyState } from '../ui/components.js';
 import { moduleStats, trackStats, stats } from './shared.js';
 
 /* ---------- Learn overview ---------- */
@@ -73,11 +73,11 @@ export function renderLesson(root, { params }) {
       <p class="explain" lang="${lang}">${esc(primary)}</p>
       ${secondary ? `<details class="acc mt-4"><summary>${lang === 'bn' ? 'Professional English explanation' : 'বাংলায় সহজ ব্যাখ্যা'}</summary><div class="acc-body"><p lang="${lang === 'bn' ? 'en' : 'bn'}">${esc(secondary)}</p></div></details>` : ''}
     </section>
-    ${visualBlock(l.visual, l.title)}
+    ${l.visual ? `<section aria-label="Visual example"><h2 class="sr-only">Visual example</h2>${visualBlock(l.visual, l.title, l)}</section>` : ''}
     ${l.why || l.when ? `<div class="qa-grid">${SEC('Why it matters', P(l.why), 'info')}${SEC('When to use it', P(l.when), 'info')}</div>` : ''}
-    ${l.how?.length ? `<section><h2>How to apply it</h2><ol class="steps-list mt-4">${l.how.map((s) => `<li>${esc(s)}</li>`).join('')}</ol></section>` : ''}
+    ${l.how?.length ? (l.figmaSteps ? `<section><h2>How to do it in Figma — step by step</h2><div class="mt-4">${figmaSteps(l.how)}</div></section>` : `<section><h2>How to apply it</h2><ol class="steps-list mt-4">${l.how.map((s) => `<li>${esc(s)}</li>`).join('')}</ol></section>`) : ''}
     ${l.example || l.digital ? `<div class="qa-grid">${SEC('Real-life example', P(l.example))}${SEC('Digital product example', P(l.digital))}</div>` : ''}
-    ${l.good || l.bad ? `<div class="qa-grid">${SEC('✓ Good UX', P(l.good), 'good')}${SEC('✕ Bad UX', P(l.bad), 'bad')}</div>` : ''}
+    ${(l.good || l.bad) && !l.visual?.pair ? `<div class="qa-grid">${SEC('✓ Good UX', P(l.good), 'good')}${SEC('✕ Bad UX', P(l.bad), 'bad')}</div>` : ''}
     ${SEC('Comparison', P(l.compare))}
     ${l.mistake || l.test ? `<div class="qa-grid">${SEC('Common mistake', P(l.mistake), 'bad')}${SEC('How to test it', P(l.test), 'info')}</div>` : ''}
     ${SEC('Key takeaway', P(l.takeaway), 'key')}
