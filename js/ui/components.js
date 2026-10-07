@@ -10,6 +10,7 @@ import { isDone, complete, uncomplete, recordAnswer, addXp, XP_RULES } from '../
 import { C, byKey } from '../../data/content.js';
 import { renderMock } from './mock.js';
 import { diagram } from './visuals.js';
+import { figmaStepVisuals, figmaEditor, stepSpec } from './figma-visual.js';
 import { grade } from '../core/exam.js';
 
 /* ---------- Toast ---------- */
@@ -147,7 +148,7 @@ export function handleBookmark(btn) {
 export function notesPanel(key) {
   const notes = store.user.notes[key] || [];
   return `<section class="card" data-notes="${esc(key)}" aria-labelledby="notes-h">
-    <h3 id="notes-h" style="display:flex;gap:8px;align-items:center">${icon('note')} ${t('notes')}</h3>
+    <h3 id="notes-h" class="notes-title">${icon('note')} ${t('notes')}</h3>
     <div class="stack-sm mt-2" data-notes-list>${notes.length ? notes.map(noteItem).join('') : '<p class="small muted" data-empty>No notes yet. Write what you want to remember in your own words.</p>'}</div>
     <div class="field mt-4"><label for="note-${esc(key)}" class="sr-only">${t('addNote')}</label>
     <textarea id="note-${esc(key)}" class="textarea" data-note-input placeholder="${t('addNote')}…" rows="3"></textarea></div>
@@ -179,13 +180,26 @@ export function bindNotes(root) {
 }
 
 /* ---------- Visual rendering (svg | compare | mock) ---------- */
-export function visualBlock(v, caption = '') {
+export function visualBlock(v, caption = '', ctx = {}) {
   if (!v) return '';
+  if (v.pair) return `<figure class="pair" aria-label="Visual example: ${esc(caption)}">
+    <div class="p-good"><h4>✓ Good UX</h4><div class="compare-stage">${renderMock(v.pair.good, { label: 'Good example' })}</div>${ctx.good ? `<p>${esc(L(ctx.good))}</p>` : ''}</div>
+    <div class="p-bad"><h4>✕ Bad UX</h4><div class="compare-stage">${renderMock(v.pair.bad, { label: 'Bad example' })}</div>${ctx.bad ? `<p>${esc(L(ctx.bad))}</p>` : ''}</div></figure>`;
+  if (v.figma) return `<figure class="figure">${figmaEditor(stepSpec(v.figma), 1, v.figma)}<figcaption>In Figma: ${esc(v.figma)}</figcaption></figure>`;
   if (v.svg) return `<figure class="figure">${diagram(v.svg)}${caption ? `<figcaption>${esc(caption)}</figcaption>` : ''}</figure>`;
   if (v.compare) { const c = C.compareMap.get(v.compare); return c ? compareView(c, { compact: true }) : ''; }
   if (v.mock) return `<figure class="figure"><div class="compare-stage">${renderMock(v.mock)}</div>${caption ? `<figcaption>${esc(caption)}</figcaption>` : ''}</figure>`;
   return '';
 }
+
+/** Step-by-step Figma pictures: each step shows the editor with the exact spot highlighted. */
+export function figmaSteps(steps, ctx = {}) {
+  const shots = figmaStepVisuals(steps, ctx);
+  return `<ol class="fg-steps">${shots.map((s) => `<li class="fg-step">${s.svg}<p>${esc(s.text)}</p></li>`).join('')}</ol>
+    <div class="fg-legend"><span>Highlighted = where to click in Figma</span></div>`;
+}
+/** Small diagram thumbnail for cards. */
+export const thumb = (name) => (name ? `<div class="thumb-visual" aria-hidden="true">${diagram(name)}</div>` : '');
 
 /* ---------- GOOD | BAD comparison ---------- */
 export function compareView(c, { compact = false } = {}) {
