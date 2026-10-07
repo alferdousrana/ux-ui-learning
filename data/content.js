@@ -37,21 +37,31 @@ const MODULE_ORDER = ['mindset', 'fundamentals', 'hci', 'laws', 'research-fundam
 
 export async function loadContent() {
   if (C.ready) return C;
-  const [ux, proc, rs, ui, fg, cr, lw, pl, cs, qs, gl, ch, cp, qb1] = await Promise.all([
+  const [ux, proc, rs, ui, fg, cr, lw, pl, cs, qs, gl, ch, cp, qb1, vis, gl2] = await Promise.all([
     import('./curriculum-ux.js'), import('./curriculum-process.js'), import('./ux-research.js'), import('./ui.js'), import('./figma.js'),
     import('./career.js'), import('./ux-laws.js'), import('./figma-plugins.js'), import('./case-studies.js'), import('./questions.js'),
-    import('./glossary.js'), import('./challenges.js'), import('./comparisons.js'), import('./questions-b1.js'),
+    import('./glossary.js'), import('./challenges.js'), import('./comparisons.js'), import('./questions-b1.js'), import('./lesson-visuals.js'), import('./glossary-b2.js'),
   ]);
 
   /* Lessons */
   const lessons = [...ux.LESSONS, ...proc.LESSONS, ...rs.LESSONS, ...ui.LESSONS, ...fg.LESSONS, ...cr.LESSONS];
+  // Every lesson gets a visual: inline → mapped → Figma step pictures → keyword fallback
+  lessons.forEach((l) => {
+    if (l.module.startsWith('figma')) l.figmaSteps = true;
+    if (!l.visual) l.visual = vis.LESSON_VISUALS[l.id] || (l.figmaSteps ? null : vis.visualForText(`${l.title} ${(l.tags || []).join(' ')}`));
+  });
+  lw.LAWS.forEach((l) => { if (!l.visual && vis.LAW_VISUALS[l.id]) l.visual = vis.LAW_VISUALS[l.id]; });
+  rs.METHODS.forEach((m) => { m.visual = { svg: vis.METHOD_VISUALS[m.id] || 'researchQuadrant' }; });
+  C.visualForText = vis.visualForText; C.visualForTerm = vis.visualForTerm; C.projectStepVisuals = vis.PROJECT_STEP_VISUALS; C.challengeVisuals = vis.CHALLENGE_VISUALS;
   C.lessons = new Map(lessons.map((l) => [l.id, l]));
   C.laws = lw.LAWS; C.lawMap = new Map(lw.LAWS.map((l) => [l.id, l])); C.lawCategories = lw.LAW_CATEGORIES;
   C.methods = rs.METHODS; C.methodMap = new Map(rs.METHODS.map((m) => [m.id, m])); C.toolkit = rs.TOOLKIT;
   C.figmaItems = fg.getFigmaItems(); C.figmaMap = new Map(C.figmaItems.map((x) => [x.id, x])); C.figmaCategories = fg.FIGMA_CATEGORIES; C.figmaBases = fg.FIGMA_BASES;
   C.plugins = pl.PLUGINS; C.pluginMap = new Map(pl.PLUGINS.map((p) => [p.id, p])); C.pluginCategories = pl.PLUGIN_CATEGORIES; C.pluginUseCases = pl.PLUGIN_USE_CASES; C.pluginNote = pl.PLUGIN_NOTE;
   C.cases = cs.CASES; C.caseMap = new Map(cs.CASES.map((c) => [c.id, c])); C.caseCategories = cs.CASE_CATEGORIES; C.caseSections = cs.CASE_SECTIONS;
-  C.glossary = gl.GLOSSARY.slice().sort((a, b) => a.term.localeCompare(b.term)); C.termMap = new Map(gl.GLOSSARY.map((g) => [g.id, g]));
+  const seenTerms = new Set(gl.GLOSSARY.map((g) => g.id));
+  const allTerms = [...gl.GLOSSARY, ...gl2.GLOSSARY_B2.filter((g) => !seenTerms.has(g.id))];
+  C.glossary = allTerms.sort((a, b) => a.term.localeCompare(b.term)); C.termMap = new Map(allTerms.map((g) => [g.id, g]));
   C.challenges = ch.getChallenges(); C.challengeMap = new Map(C.challenges.map((c) => [c.id, c]));
   C.projects = ch.PROJECTS; C.projectMap = new Map(ch.PROJECTS.map((p) => [p.id, p])); C.projectSteps = ch.PROJECT_STEPS;
   C.comparisons = cp.COMPARISONS; C.compareMap = new Map(cp.COMPARISONS.map((x) => [x.id, x])); C.compareCategories = cp.COMPARE_CATEGORIES;

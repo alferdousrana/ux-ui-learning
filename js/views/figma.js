@@ -6,7 +6,7 @@ import { C } from '../../data/content.js';
 import { isDone, visit } from '../core/progress.js';
 import { replaceQuery } from '../core/router.js';
 import { tokenize } from '../core/search.js';
-import { pageHead, itemCard, progressBar, diffBadge, pager, emptyState, bookmarkBtn, completeBtn, notesPanel, bindNotes } from '../ui/components.js';
+import { figmaSteps, pageHead, itemCard, progressBar, diffBadge, pager, emptyState, bookmarkBtn, completeBtn, notesPanel, bindNotes } from '../ui/components.js';
 import { renderMock } from '../ui/mock.js';
 import { moduleStats } from './shared.js';
 import { notFound } from './learn.js';
@@ -63,7 +63,7 @@ export function renderFigmaItem(root, { params }) {
     <div class="split mt-6"><article class="lesson-body">
       <figure class="figure"><div class="compare-stage">${renderMock(x.mock, { theme: x.variant.theme, label: x.name })}</div><figcaption>Visual example (${esc(x.variant.theme)} theme)</figcaption></figure>
       <div class="qa-grid"><div class="callout"><h4>What it is</h4><p>${esc(x.what)}</p></div><div class="callout"><h4>Why it is used</h4><p>${esc(x.why)}</p></div><div class="callout info"><h4>UX purpose</h4><p>${esc(x.ux)}</p></div><div class="callout info"><h4>UI purpose</h4><p>${esc(x.ui)}</p></div></div>
-      <section><h2>How to create this in Figma</h2><ol class="steps-list mt-4">${x.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol></section>
+      <section><h2>How to create this in Figma — step by step</h2><div class="mt-4">${figmaSteps(x.steps)}</div></section>
       <div class="callout bad"><h4>Common mistake</h4><p>${esc(x.mistake)}</p></div>
       <div class="callout key"><h4>Practice challenge</h4><p>${esc(x.challenge)}</p></div>
       ${notesPanel(key)}

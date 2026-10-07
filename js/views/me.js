@@ -10,7 +10,8 @@ import { sync } from '../firebase/sync.js';
 import { pageHead, progressBar, toast, confirmDialog, emptyState } from '../ui/components.js';
 import { trackStats, overall } from './shared.js';
 
-export const APP_VERSION = '1.1.0';
+import { APP_VERSION, CHANGELOG } from '../version.js';
+export { APP_VERSION };
 
 function heatmap() {
   const today = dateKey(); const start = addDays(today, -7 * 16 + 1);
@@ -76,7 +77,7 @@ export function renderSettings(root) {
       ${row('Clear all local data', 'Removes everything this app stored on this device', '<button class="btn btn-danger btn-sm" id="clr">Clear local data</button>')}
     </section>
     <section class="card mt-6"><h2 style="font-size:var(--fs-lg)">About</h2>
-      ${row('Version', '', `<span>${APP_VERSION}</span>`)}
+      ${row('Version', `Latest changes: ${esc(CHANGELOG[0].items.slice(0, 2).join('; '))}…`, `<span class="row"><strong>v${APP_VERSION}</strong><button class="btn btn-secondary btn-sm" id="chk-upd">${icon('refresh')} Check for updates</button></span>`)}
       ${row('Offline status', '', `<span id="offst">${navigator.onLine ? 'Online' : 'Offline'} · ${'serviceWorker' in navigator && navigator.serviceWorker.controller ? 'Available offline ✓' : 'Offline cache not active yet'}</span>`)}
       ${row('Storage', '', `<span>${localStore.kind === 'indexeddb' ? 'IndexedDB' : 'localStorage (fallback)'}</span>`)}
       ${row('Cloud sync', 'Firebase sync is prepared but not connected in this version', `<span class="badge">${esc(sync.statusLabel())}</span>`)}
@@ -86,6 +87,11 @@ export function renderSettings(root) {
   root.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-set]');
     if (b) { store.setSetting(b.dataset.set, b.dataset.val); b.parentElement.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); if (b.dataset.set === 'lang') location.reload(); }
+    if (e.target.closest('#chk-upd')) {
+      const { checkForUpdates } = await import('../app.js');
+      const r = await checkForUpdates();
+      toast(r === 'found' ? 'Update found — downloading…' : r === 'latest' ? `You have the latest version (v${APP_VERSION})` : 'Updates work after installing from a web server (HTTPS)', { ico: '🔄' });
+    }
     if (e.target.closest('#exp')) { downloadFile(`ux-ui-progress-${dateKey()}.json`, JSON.stringify(exportData(), null, 2)); toast('Progress exported', { ico: '💾' }); }
     if (e.target.closest('#rst') && await confirmDialog('Reset progress?', 'XP, completions, exams, streak and reviews will be cleared. Notes, bookmarks and personas are also cleared. Settings stay.', { confirm: 'Reset progress', danger: true })) { await store.reset(); toast('Progress reset'); location.hash = '#/'; }
     if (e.target.closest('#clr') && await confirmDialog('Clear all local data?', 'Everything stored by UX-UI on this device will be removed. Export first if you want a backup.', { confirm: 'Clear everything', danger: true })) { await store.clearAll(); location.hash = '#/'; location.reload(); }

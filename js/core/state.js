@@ -19,6 +19,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   reminders: false,
   reduceMotion: false,
   sidebarGroups: {},
+  lastVersion: null,
 });
 
 export function defaultUser() {

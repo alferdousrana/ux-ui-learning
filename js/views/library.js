@@ -5,7 +5,7 @@ import { icon } from '../core/icons.js';
 import { C, byKey } from '../../data/content.js';
 import { search, highlight } from '../core/search.js';
 import { replaceQuery } from '../core/router.js';
-import { pageHead, emptyState, typeIcon, typeLabel, bookmarkBtn } from '../ui/components.js';
+import { pageHead, emptyState, typeIcon, typeLabel, bookmarkBtn, visualBlock } from '../ui/components.js';
 
 /* ---------- Glossary ---------- */
 export function renderGlossary(root, { params, query }) {
@@ -21,7 +21,8 @@ export function renderGlossary(root, { params, query }) {
     $('#az', root).innerHTML = letters.map((l) => `<a class="chip" href="#/glossary" data-letter="${l}">${l}</a>`).join('');
     $('#gcount', root).textContent = `${list.length} terms`;
     $('#glist', root).innerHTML = list.length ? list.map((g) => `<details class="acc" id="g-${g.id}" data-l="${g.term[0].toUpperCase()}" ${focus === g.id ? 'open' : ''}><summary><span><strong>${esc(g.term)}</strong> <span class="small muted">· ${esc(g.bn)}</span></span></summary><div class="acc-body">
-      <div class="qa-grid"><div class="callout"><h4>Simple definition</h4><p>${esc(g.simple)}</p></div><div class="callout info"><h4>Professional definition</h4><p>${esc(g.en)}</p></div></div>
+      <div class="g-visual" data-gv="${g.id}"></div>
+      <div class="qa-grid mt-4"><div class="callout"><h4>Simple definition</h4><p>${esc(g.simple)}</p></div><div class="callout info"><h4>Professional definition</h4><p>${esc(g.en)}</p></div></div>
       <div class="callout key mt-4"><h4>Example</h4><p>${esc(g.example)}</p></div>
       ${g.related.length ? `<div class="row mt-4"><span class="small muted">Related:</span>${g.related.map((r) => { const rg = C.glossary.find((x) => x.term === r); return rg ? `<a class="chip" href="#/glossary/${rg.id}">${esc(r)}</a>` : `<span class="badge">${esc(r)}</span>`; }).join('')}</div>` : ''}
       <div class="mt-4">${bookmarkBtn('term:' + g.id, g.term, '#/glossary/' + g.id)}</div></div></details>`).join('')
@@ -30,8 +31,10 @@ export function renderGlossary(root, { params, query }) {
   };
   $('#gq', root).addEventListener('input', debounce((e) => { q = e.target.value; draw(); }, 150));
   root.addEventListener('click', (e) => { const l = e.target.closest('[data-letter]'); if (l) { e.preventDefault(); root.querySelector(`[data-l="${l.dataset.letter}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+  // Render each term's visual only when opened (keeps 200+ terms fast)
+  root.addEventListener('toggle', (e) => { const d = e.target; if (!d.open) return; const slot = d.querySelector('[data-gv]'); if (slot && !slot.dataset.done) { const g = C.termMap.get(slot.dataset.gv); slot.innerHTML = `<p class="small muted">Visual example</p>${visualBlock(C.visualForTerm(g), g.term)}`; slot.dataset.done = '1'; } }, true);
   draw();
-  if (focus) setTimeout(() => $(`#g-${focus}`, root)?.scrollIntoView({ block: 'center' }), 50);
+  if (focus) setTimeout(() => { const d = $(`#g-${focus}`, root); d?.scrollIntoView({ block: 'center' }); d?.dispatchEvent(new Event('toggle')); }, 50);
 }
 
 /* ---------- Bookmarks ---------- */

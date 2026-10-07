@@ -12,6 +12,7 @@ import { loadContent } from '../data/content.js';
 import { search, highlight, warm } from './core/search.js';
 import { levelInfo, currentStreak, todayActivity } from './core/progress.js';
 import { toast, modal, handleBookmark, handleComplete, typeIcon, typeLabel } from './ui/components.js';
+import { APP_VERSION, CHANGELOG } from './version.js';
 
 /* ---------- Theme & settings on <html> ---------- */
 function applySettings() {
@@ -201,13 +202,62 @@ async function install() {
 }
 function initPWA() {
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-  if (!window.__UXUI_NO_SW && 'serviceWorker' in navigator && location.protocol.startsWith('http')) {
-    navigator.serviceWorker.register('./service-worker.js').then((reg) => {
-      reg.addEventListener('updatefound', () => { const w = reg.installing; w?.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) toast('Update ready — reload to get the latest version', { ico: '🔄', timeout: 8000 }); }); });
-    }).catch((err) => console.info('Service worker not registered:', err.message));
-  }
+  initServiceWorker();
   const net = () => { document.body.classList.toggle('is-offline', !navigator.onLine); $('#net-dot')?.classList.toggle('off', !navigator.onLine); $('#net-label').textContent = navigator.onLine ? 'Online · works offline' : 'Offline mode'; };
   addEventListener('online', net); addEventListener('offline', net); net();
+}
+
+/* ---------- Updates (v3): detect new versions, apply safely ---------- */
+let userInteracted = false;
+['pointerdown', 'keydown'].forEach((ev) => addEventListener(ev, () => { userInteracted = true; }, { once: true, capture: true }));
+export let swReg = null;
+function showUpdateBanner(apply) {
+  if ($('#update-banner')) return;
+  const el = document.createElement('div');
+  el.id = 'update-banner'; el.className = 'update-banner'; el.setAttribute('role', 'alert');
+  el.innerHTML = `<span>🔄 ${store.settings.lang === 'bn' ? 'নতুন সংস্করণ এসেছে।' : 'A new version is available.'}</span><button class="btn btn-primary btn-sm" data-upd>${store.settings.lang === 'bn' ? 'এখনই আপডেট করুন' : 'Update now'}</button><button class="btn btn-ghost btn-sm" data-later>${store.settings.lang === 'bn' ? 'পরে' : 'Later'}</button>`;
+  document.body.appendChild(el);
+  el.addEventListener('click', (e) => { if (e.target.closest('[data-upd]')) { el.querySelector('[data-upd]').textContent = '…'; apply(); } if (e.target.closest('[data-later]')) el.remove(); });
+}
+async function initServiceWorker() {
+  if (window.__UXUI_NO_SW || !('serviceWorker' in navigator) || !location.protocol.startsWith('http')) return;
+  try {
+    swReg = await navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' });
+  } catch (err) { console.info('Service worker not registered:', err.message); return; }
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing || !hadController) return;
+    refreshing = true; store.flush().finally(() => location.reload());
+  });
+  const hadController = !!navigator.serviceWorker.controller;
+  const offer = (worker) => {
+    if (!worker || !navigator.serviceWorker.controller) return;
+    const midExam = location.hash.startsWith('#/exam/') && document.querySelector('#ex-timer');
+    if (!userInteracted && !midExam) worker.postMessage('SKIP_WAITING'); // app just opened → apply silently
+    else showUpdateBanner(() => worker.postMessage('SKIP_WAITING'));
+  };
+  if (swReg.waiting) offer(swReg.waiting);
+  swReg.addEventListener('updatefound', () => {
+    const w = swReg.installing;
+    w?.addEventListener('statechange', () => { if (w.state === 'installed') offer(w); });
+  });
+  const check = () => swReg.update().catch(() => {});
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+  addEventListener('online', check);
+  setInterval(check, 30 * 60 * 1000);
+}
+export async function checkForUpdates() {
+  if (!swReg) return 'unsupported';
+  await swReg.update();
+  return swReg.installing || swReg.waiting ? 'found' : 'latest';
+}
+function showWhatsNew() {
+  const last = store.settings.lastVersion;
+  if (last === APP_VERSION) return;
+  store.setSetting('lastVersion', APP_VERSION);
+  if (!last) return; // first install: nothing to announce
+  const notes = CHANGELOG.filter((c) => c.version > last || c.version === APP_VERSION).slice(0, 3);
+  modal({ title: `${store.settings.lang === 'bn' ? 'আপডেট হয়েছে' : 'Updated'} — v${APP_VERSION}`, body: notes.map((c) => `<h3 style="font-size:var(--fs-md)">v${c.version}</h3><ul class="prose small mt-2">${c.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`).join('<div class="mt-4"></div>'), actions: [{ label: 'OK', cls: 'btn-primary' }] });
 }
 
 /* ---------- Boot ---------- */
@@ -232,6 +282,7 @@ async function boot() {
   document.addEventListener('visibilitychange', () => { if (document.hidden) store.flush(); });
   start(onRoute);
   warm();
+  setTimeout(showWhatsNew, 600);
   if (store.settings.reminders && !todayActivity().items && new Date().getHours() >= 17) setTimeout(() => toast('You haven\'t studied today — 15 minutes keeps your streak alive', { ico: '🔔', timeout: 7000 }), 1500);
 }
 boot().catch((e) => { console.error(e); const m = $('#main'); if (m) m.innerHTML = `<div class="view"><div class="empty"><div class="e-ico">⚠️</div><h3>UX-UI couldn't start</h3><p>${esc(e.message)}</p><button class="btn btn-primary" onclick="location.reload()">Reload</button></div></div>`; });

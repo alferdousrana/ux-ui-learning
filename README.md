@@ -17,14 +17,14 @@ Deploy by uploading the folder to any static host with HTTPS (Netlify, Vercel, G
 Firebase Hosting). After the first visit the whole app works offline and can be installed
 (Android, Windows, macOS, ChromeOS via Chrome/Edge; iPhone/iPad via Safari → Add to Home Screen).
 
-## What's inside (v1.0.0)
+## What's inside (v3.0.0)
 
 | Area | Content |
 |---|---|
-| Lessons | 205 lessons in 21 modules: Design Mindset (L0), UX Fundamentals (L1), Human Interaction (L2), Research, Personas, IA, User Flow, Wireframing, Prototyping, Usability Testing, Accessibility, Typography, Color, Layout, 24 UI components, Design Systems, Figma Beginner/Intermediate/Advanced, Career |
+| Lessons | 205 lessons in 21 modules, **every one with a visual** (diagram, good/bad mock pair or Figma step pictures): Design Mindset (L0), UX Fundamentals (L1), Human Interaction (L2), Research, Personas, IA, User Flow, Wireframing, Prototyping, Usability Testing, Accessibility, Typography, Color, Layout, 24 UI components, Design Systems, Figma Beginner/Intermediate/Advanced, Career |
 | UX Laws | 22 laws, each with the full card (Bangla, English, behavior, web/mobile examples, good/bad, before/after, checklist, when/when not, related, quiz) |
 | UX Research | 8 fundamentals + 14 methods (steps, sample questions, pros/cons, output, practice) + 10 offline templates/checklists + Persona Builder |
-| Figma library | 2,646 items = 64 hand-written base tutorials × style × size × theme × platform; every item has 9 variant-specific steps |
+| Figma library | 2,646 items = 64 hand-written base tutorials × style × size × theme × platform; every item has 9 variant-specific steps, **each with a picture of the Figma editor highlighting where to click** |
 | Plugins | 59 real Figma Community plugins, searchable/filterable, each flagged **needs verification** |
 | Good vs Bad Lab | 26 data-driven comparisons rendered from mock-UI specs (no image assets) |
 | Critique Lab | 8 critiques with reasoning, principle, law and a better design |
@@ -32,16 +32,41 @@ Firebase Hosting). After the first visit the whole app works offline and can be 
 | Questions | 238 exam questions (88 core + 150 in batch 1: MCQ, true/false, multi-select, matching, scenario, identify-the-law, critique) + every lesson/law/method quiz ≈ 285 in the bank; 10 exams |
 | Challenges | 160 briefs (10 flagship + 150 composed from 15 domains × 10 templates), daily challenge |
 | Projects | 10 guided projects × 12 stages |
-| Glossary | 72 bilingual terms |
+| Glossary | 250 bilingual terms (72 + 178 in batch 2), each with a visual example |
 | Tools | User Flow Lab (drag, connect, rename, keyboard, save, JSON export), spaced review, global search |
 
 Bangla is the default lesson language (natural, beginner-friendly). Every lesson has a
 **বাংলা / English** switch; the other language is one click away in the same page.
 
+## Visual learning
+
+- `js/ui/visuals.js` — ~110 theme-aware SVG diagrams (laws, research methods, accessibility, typography, color, layout, career…)
+- `js/ui/figma-visual.js` — draws a simplified Figma editor and highlights the toolbar tool, panel or section a step refers to, with the result on the canvas. Steps are matched by keywords, so new Figma content gets pictures automatically.
+- `data/lesson-visuals.js` — maps every lesson, law, method, challenge, project stage and glossary term to a visual. Add an entry here to change or add a picture.
+
+## Releasing updates (installed apps update automatically)
+
+```bash
+# 1. make your changes, add a CHANGELOG entry in js/version.js
+python3 tools/release.py 3.0.1     # bumps version + regenerates service-worker.js
+# 2. deploy the folder
+```
+
+What users see: open apps check for a new version on launch, when the app comes back to the
+foreground, when the network returns, and every 30 minutes. If the app was just opened, the
+update applies silently; if the user is in the middle of something, a banner offers
+"Update now / Later" (never during a running exam). After updating, a "What's new" dialog lists
+the changes. Old caches are deleted; offline mode keeps working.
+
+**Hosting:** `service-worker.js`, `index.html` and `js/version.js` must not be cached by the
+host. `_headers` (Netlify / Cloudflare Pages) and `firebase.json` (Firebase Hosting) are included
+and already set this. On other hosts, set `Cache-Control: no-cache` for those three files.
+
 ## Architecture
 
 ```
-index.html, manifest.json, service-worker.js
+index.html, manifest.json, service-worker.js (generated) + service-worker.js.tmpl
+tools/release.py   version bump + precache generation · _headers / firebase.json (no-cache rules)
 css/   variables · themes (light/dark tokens) · reset · layout · components · responsive
 js/
   app.js                 shell, routing table, global actions, search dropdown, PWA
@@ -75,7 +100,8 @@ Adding content = adding records to the data files — no UI changes needed.
 - Comparison: add an `X(...)` record in `comparisons.js` using mock nodes (`['btn', {t, v}]` …).
 - Plugin: add a `P(...)` record; set `lastVerified` after checking the Figma Community listing.
 - Question: add to `questions.js` or a new batch file (e.g. `questions-b2.js`, wired in `content.js`); tag it so exams pick it up.
-- After changing files, bump `CACHE_VERSION` in `service-worker.js` and regenerate `PRECACHE`.
+- Glossary: add to `glossary.js` or a batch file (`glossary-b2.js`); duplicates are skipped automatically.
+- After any change, run `python3 tools/release.py X.Y.Z` before deploying.
 
 ## Connecting Firebase later
 

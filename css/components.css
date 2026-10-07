@@ -536,3 +536,41 @@ h1[tabindex="-1"]:focus { outline: none; }
 .badge { white-space: nowrap; }
 .qa-grid > :only-child { grid-column: 1 / -1; }
 html[data-theme="dark"] .mk-phone { border-color: #2C3833; }
+
+/* ---------- Icon sizing (every icon gets a sane default size) ---------- */
+.ico { width: 1.15em; height: 1.15em; flex: none; display: inline-block; vertical-align: -0.18em; }
+h1 .ico, h2 .ico, h3 .ico, h4 .ico { width: 1em; height: 1em; }
+.nav-link .ico, .nav-group > summary .ico { width: 18px; height: 18px; }
+.nav-group > summary .chev { width: 14px; height: 14px; }
+.icon-btn .ico { width: 20px; height: 20px; }
+.bottom-nav .ico { width: 22px; height: 22px; }
+.btn .ico { width: 16px; height: 16px; }
+.btn-sm .ico { width: 14px; height: 14px; }
+.notes-title { display: flex; gap: 8px; align-items: center; font-size: var(--fs-lg); }
+
+/* ---------- Figma step-by-step visuals ---------- */
+.fg-steps { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: var(--sp-4); counter-reset: fs; }
+.fg-step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; display: flex; flex-direction: column; }
+.fg-step .fg-shot { width: 100%; height: auto; display: block; border-bottom: 1px solid var(--line); background: #F5F5F5; }
+.fg-step p { padding: var(--sp-3) var(--sp-4); color: var(--ink); font-size: var(--fs-sm); display: grid; grid-template-columns: 26px 1fr; gap: var(--sp-2); }
+.fg-step p::before { counter-increment: fs; content: counter(fs); width: 22px; height: 22px; border-radius: 50%; background: #F2A000; color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 11px; }
+.fg-legend { display: flex; flex-wrap: wrap; gap: var(--sp-4); font-size: var(--fs-xs); color: var(--muted); margin-top: var(--sp-2); }
+.fg-legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; border: 2.5px solid #F2A000; border-radius: 3px; margin-right: 6px; vertical-align: -2px; }
+
+/* ---------- Good/Bad pair visual inside lessons ---------- */
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); }
+.pair > div { border-radius: var(--r-md); padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-3); }
+.pair .p-good { background: var(--good-soft); }
+.pair .p-bad { background: var(--bad-soft); }
+.pair h4 { font-size: var(--fs-md); }
+.pair .p-good h4 { color: var(--good); }
+.pair .p-bad h4 { color: var(--bad); }
+.pair .compare-stage { padding: var(--sp-2) 0; }
+.pair p { font-size: var(--fs-sm); color: var(--ink-2); }
+@media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .fg-steps { grid-template-columns: 1fr; } }
+.thumb-visual { margin: calc(var(--sp-4) * -1) calc(var(--sp-4) * -1) var(--sp-3); border-bottom: 1px solid var(--line); background: var(--surface-2); border-radius: var(--r-md) var(--r-md) 0 0; padding: var(--sp-2); }
+.thumb-visual svg { width: 100%; height: 110px; }
+
+/* Update banner */
+.update-banner { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--sp-5) + env(safe-area-inset-bottom, 0px)); z-index: var(--z-toast); display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-md); box-shadow: var(--shadow-3); font-weight: 600; font-size: var(--fs-sm); animation: rise var(--dur-slow) var(--ease); max-width: calc(100vw - 24px); flex-wrap: wrap; }
+@media (max-width: 720px) { .update-banner { bottom: calc(var(--bottomnav-h) + var(--sp-3) + env(safe-area-inset-bottom, 0px)); } }

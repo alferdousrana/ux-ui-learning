@@ -7,8 +7,9 @@ import { isDone, complete, visit } from '../core/progress.js';
 import { dailyChallenge } from '../core/recommendations.js';
 import { replaceQuery } from '../core/router.js';
 import { tokenize } from '../core/search.js';
-import { pageHead, diffBadge, pager, emptyState, notesPanel, bindNotes, completeBtn, bookmarkBtn, progressBar, toast } from '../ui/components.js';
+import { visualBlock, pageHead, diffBadge, pager, emptyState, notesPanel, bindNotes, completeBtn, bookmarkBtn, progressBar, toast } from '../ui/components.js';
 import { notFound } from './learn.js';
+import { diagram } from '../ui/visuals.js';
 
 const PER = 18;
 export function renderChallenges(root, { query }) {
@@ -45,6 +46,7 @@ export function renderChallenge(root, { params }) {
     <div class="lesson-meta">${diffBadge(c.difficulty)}<span class="badge">${icon('clock')} ${c.minutes} min</span>${c.skills.map((s) => `<span class="badge">${esc(s)}</span>`).join('')}</div>
     <div class="split"><article class="lesson-body">
       <div class="callout primary"><h4>Problem</h4><p>${esc(c.problem)}</p></div>
+      ${(() => { const v = C.challengeVisuals[c.id] || C.challengeVisuals[c.id.split('--')[0]] || C.visualForText(c.title); return `<section><h2 style="font-size:var(--fs-lg)">Related visual example</h2><div class="mt-4">${visualBlock(v, c.title)}</div></section>`; })()}
       <div class="qa-grid"><div class="callout"><h4>Target users</h4><p>${esc(c.users)}</p></div><div class="callout"><h4>Constraints</h4>${list(c.constraints)}</div><div class="callout"><h4>Required screens</h4>${list(c.screens)}</div><div class="callout info"><h4>UX requirements</h4>${list(c.ux)}</div></div>
       <div class="callout"><h4>Optional UI requirements</h4>${list(c.ui)}</div>
       <section class="card" aria-labelledby="ev-h"><h2 id="ev-h" style="font-size:var(--fs-lg)">Self-evaluation checklist</h2><p class="small muted">Tick each item your design satisfies.</p>
@@ -77,7 +79,7 @@ export function renderProject(root, { params }) {
   root.innerHTML = `${pageHead({ crumbs: [[t('projects'), '#/projects'], [p.title]], title: p.title, lead: esc(p.goal) })}
     <div class="card" id="pj-bar"></div>
     <div class="stack mt-6">${C.projectSteps.map(([name, desc], i) => `<details class="acc" ${!st.steps[i] && !Object.keys(st.steps).length && i === 0 ? 'open' : ''}><summary><span class="num">${i + 1}</span>${esc(name)} ${st.steps[i] ? '<span class="badge badge-good">Done</span>' : ''}</summary><div class="acc-body">
-      <p>${esc(desc)}</p><div class="field mt-4"><label for="pj-${i}">Your work / link / reflection</label><textarea class="textarea" id="pj-${i}" data-pnote="${i}" rows="3">${esc(st.notes?.[i] || '')}</textarea></div>
+      <figure class="figure">${diagram(C.projectStepVisuals[i])}</figure><p class="mt-4">${esc(desc)}</p><div class="field mt-4"><label for="pj-${i}">Your work / link / reflection</label><textarea class="textarea" id="pj-${i}" data-pnote="${i}" rows="3">${esc(st.notes?.[i] || '')}</textarea></div>
       <label class="toggle mt-4"><input type="checkbox" data-pstep="${i}" ${st.steps[i] ? 'checked' : ''}><span class="track"></span><span>Stage complete</span></label></div></details>`).join('')}</div>`;
   const bar = () => { const s = store.user.projects[p.id]?.steps || {}; const n = Object.values(s).filter(Boolean).length; $('#pj-bar', root).innerHTML = `<div class="row-between"><span class="small"><strong>${n}</strong> of ${C.projectSteps.length} stages</span>${n === C.projectSteps.length ? '<span class="badge badge-good">Project complete</span>' : ''}</div><div class="mt-2">${progressBar(Math.round((n / C.projectSteps.length) * 100))}</div>`; return n; };
   bar();
